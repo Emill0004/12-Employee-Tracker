@@ -140,6 +140,5 @@ init();
 
 /*
 TODO:
-get sql working in isolation
 link inquirer inputs to database (through server.js?)
 */
