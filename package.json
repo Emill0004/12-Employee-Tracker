@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Emill0004/12-Employee-Tracker#readme",
   "dependencies": {
     "inquirer": "^8.2.4",
-    "mysql2": "^2.2.5"
+    "mysql2": "^2.2.5",
+    "express": "4.17.1"
   }
 }

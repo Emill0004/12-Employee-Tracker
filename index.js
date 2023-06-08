@@ -137,3 +137,8 @@ function updtEmpl() {
 }
 
 init();
+
+/*
+TODO:
+link inquirer inputs to database (through server.js?)
+*/
