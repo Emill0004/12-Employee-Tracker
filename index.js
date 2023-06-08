@@ -1,4 +1,21 @@
 const inquirer = require('inquirer');
+const express = require('express');
+const mysql = require('mysql2');
+
+const PORT = process.env.PORT || 3001;
+const app = express();
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      user: 'root',
+      password: '95882494',
+      database: 'company_db'
+    },
+  );
 
 function init() {
     inquirer
@@ -21,13 +38,13 @@ function init() {
         )
         .then((data) => {
             if (data.initial == 'View All Departments') {
-                console.log('render department table');
+                showDept();
                 init();
             } else if (data.initial == 'View All Roles') {
-                console.log('render role table');
+                showRole();
                 init();
             } else if (data.initial == 'View All Employees') {
-                console.log('render employee table');
+                showEmpl();
                 init();
             } else if (data.initial == 'Add a Department') {
                 addDept();
@@ -40,6 +57,39 @@ function init() {
             }
         })
 }
+
+function showDept() {
+    const sql = `SELECT * FROM department;`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        console.table(result);
+    })
+};
+
+function showRole() {
+    const sql = `SELECT * FROM role;`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        console.table(result);
+    })
+};
+
+function showEmpl() {
+    const sql = `SELECT * FROM employee;`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        console.table(result);
+    })
+};
 
 function addDept() {
     inquirer
