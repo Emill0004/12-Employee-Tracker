@@ -15,7 +15,7 @@ const db = mysql.createConnection(
       password: '95882494',
       database: 'company_db'
     },
-  );
+);
 
 function init() {
     inquirer
@@ -101,12 +101,37 @@ function addDept() {
             }
         )
         .then((data) => {
+            const sql = `INSERT INTO department (name)
+                VALUES (?)`;
+            const params = [data.deptName];
+
+            db.query(sql, params, (err, result) => {
+                if (err) {
+                    console.log(err.message);
+                    return;
+                }
+            })
             console.log(`Added ${data.deptName} to the database`);
             init();
         })
-}
+        
+};
 
 function addRole() {
+    const nameArr = [];
+    const idArr = [];
+
+    db.query(`SELECT * FROM department;`, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        for (let i = 0; i < result.length; i++) {
+            nameArr.push(result[i].name);
+            idArr.push(result[i].id)
+        }
+    });
+
     inquirer
         .prompt([
             {
@@ -122,11 +147,28 @@ function addRole() {
             {
                 type: 'list',
                 message: 'Which department does the role blong to?',
-                choices: ['WIP', 'WIP', 'WIP', 'WIP'],
+                choices: nameArr,
                 name: 'roleDept',
             }
         ])
         .then((data) => {
+            let deptId;
+            for (let i = 0; i < nameArr.length; i++) {
+                if (nameArr[i] == data.roleDept) {
+                    deptId = i + 1;
+                }
+            }
+            const sql = `INSERT INTO role (title, salary, department_id)
+                VALUES (?, ?, ?)`;
+            const params = [data.roleName, data.roleSalary, deptId];
+            
+
+            db.query(sql, params, (err, result) => {
+                if (err) {
+                    console.log(err.message);
+                    return;
+                }
+            })                
             console.log(`Added ${data.roleName} to the database`);
             init();
         })
@@ -190,5 +232,6 @@ init();
 
 /*
 TODO:
-link inquirer inputs to database (through server.js?)
+finish setting up inquirer
+    have a db.query to return an array of the values you need
 */
