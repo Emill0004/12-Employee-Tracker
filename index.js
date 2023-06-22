@@ -39,13 +39,10 @@ function init() {
         .then((data) => {
             if (data.initial == 'View All Departments') {
                 showDept();
-                init();
             } else if (data.initial == 'View All Roles') {
                 showRole();
-                init();
             } else if (data.initial == 'View All Employees') {
                 showEmpl();
-                init();
             } else if (data.initial == 'Add a Department') {
                 addDept();
             } else if (data.initial == 'Add a Role') {
@@ -66,6 +63,7 @@ function showDept() {
             return;
         }
         console.table(result);
+        init();
     })
 };
 
@@ -77,6 +75,7 @@ function showRole() {
             return;
         }
         console.table(result);
+        init();
     })
 };
 
@@ -88,6 +87,7 @@ function showEmpl() {
             return;
         }
         console.table(result);
+        init();
     })
 };
 
@@ -128,7 +128,7 @@ function addRole() {
         }
         for (let i = 0; i < result.length; i++) {
             nameArr.push(result[i].name);
-            idArr.push(result[i].id)
+            idArr.push(result[i].id);
         }
     });
 
@@ -175,6 +175,33 @@ function addRole() {
 }
 
 function addEmpl() {
+    const roleArr = [];
+    const roleIdArr = [];
+    const managerArr = [];
+    const managerIdArr = [];
+
+    db.query(`SELECT * FROM role;`, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        for (let i = 0; i < result.length; i++) {
+            roleArr.push(result[i].title);
+            roleIdArr.push(result[i].id);
+        }
+    });
+
+    db.query(`SELECT * FROM employee;`, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        for (let i = 0; i < result.length; i++) {
+            managerArr.push(`${result[i].first_name} ${result[i].last_name}`);
+            managerIdArr.push(result[i].id);
+        }
+    });
+
     inquirer
         .prompt([
             {
@@ -190,17 +217,39 @@ function addEmpl() {
             {
                 type: 'list',
                 message: "What is the employee's role?",
-                choices: ['WIP', 'WIP', 'WIP', 'WIP'],
+                choices: roleArr,
                 name: 'emplRole',
             },
             {
                 type: 'list',
                 message: "Who is the employee's manager?",
-                choices: ['WIP', 'WIP', 'WIP', 'WIP'],
+                choices: managerArr,
                 name: 'emplMgr', 
             }
         ])
         .then((data) => {
+            let roleId;
+            let managerId;
+            for (let i = 0; i < roleArr.length; i++) {
+                if (roleArr[i] == data.emplRole) {
+                    roleId = i + 1;
+                }
+            }
+            for (let i = 0; i < managerArr.length; i++) {
+                if (managerArr[i] == data.emplMgr) {
+                    managerId = i + 1;
+                }
+            }
+            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                VALUES (?, ?, ?, ?)`;
+            const params = [data.fName, data.lName, roleId, managerId];
+            
+            db.query(sql, params, (err, result) => {
+                if (err) {
+                    console.log(err.message);
+                    return;
+                }
+            })
             console.log(`Added ${data.fName} ${data.lName} to the database`);
             init();
         })
@@ -233,5 +282,4 @@ init();
 /*
 TODO:
 finish setting up inquirer
-    have a db.query to return an array of the values you need
 */
