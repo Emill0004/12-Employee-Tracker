@@ -1,3 +1,4 @@
+-- Insert dummy data
 INSERT INTO department (name)
 VALUES ('Legal'),
        ('Sales'),
@@ -11,7 +12,7 @@ VALUES ('Salesperson', 75000, 2),
        ('Software Developer', 10, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ('Jimmy', 'Lawson', 3, NULL),
-       ('Bob', 'Roberts', 1, 1),
-       ('Robert', 'Roberts', 2, 1),
-       ('Kenzie', 'Smith', 3, 1);
+VALUES ('Jimmy', 'Lawson', 1, NULL),
+       ('Bob', 'Roberts', 2, 1),
+       ('Robert', 'Roberts', 3, 1),
+       ('Kenzie', 'Smith', 4, 1);
