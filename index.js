@@ -292,13 +292,11 @@ async function updtEmpl() {
             for (let i = 0; i < roleArr.length; i++) {
                 if (roleArr[i] == data.updtRole) {
                     roleId = i + 1;
-                    console.log(roleId);
                 }
             }
             for (let i = 0; i < employeeArr.length; i++) {
                 if (employeeArr[i] == data.updtEmpl) {
                     employeeId = i + 1;
-                    console.log(employeeId);
                 }
             }
             const sql = `UPDATE employee SET role_id = (?) WHERE id = (?);`;
