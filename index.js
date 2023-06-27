@@ -17,6 +17,7 @@ const db = mysql.createConnection(
     },
 );
 
+// Main function that calls other functions based on input.
 function init() {
     inquirer
         .prompt(
@@ -37,6 +38,7 @@ function init() {
             }
         )
         .then((data) => {
+            // If statements to call subsequent functions
             if (data.initial == 'View All Departments') {
                 showDept();
             } else if (data.initial == 'View All Roles') {
@@ -55,6 +57,7 @@ function init() {
         })
 }
 
+// The following three functions query the database and return tables with the retrieved infomation
 function showDept() {
     const sql = `SELECT * FROM department;`;
     db.query(sql, (err, result) => {
@@ -91,6 +94,7 @@ function showEmpl() {
     })
 };
 
+// Add a department based on user input
 function addDept() {
     inquirer
         .prompt(
@@ -117,6 +121,7 @@ function addDept() {
         
 };
 
+// Adds a role based on user input
 function addRole() {
     const nameArr = [];
     const idArr = [];
@@ -174,6 +179,7 @@ function addRole() {
         })
 }
 
+// Adds an employee based on user input.
 function addEmpl() {
     const roleArr = [];
     const roleIdArr = [];
@@ -255,41 +261,18 @@ function addEmpl() {
         })
 }
 
-function updtEmpl() {
-    const employeeArr = [];
-    const employeeIdArr = [];
-    const roleArr = [];
-    const roleIdArr = [];
+// Updates an existing employee's role
+async function updtEmpl() {
+    let [rows] = await db.promise().query(`SELECT * FROM role;`);
+    let roleArr = rows.map(row => row.title);
+    let roleIdArr = rows.map(row => row.id);
 
-    db.query(`SELECT * FROM employee`, (err, result) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        for (let i = 0; i < result.length; i++) {
-            employeeArr.push(`${result[i].first_name} ${result[i].last_name}`);
-            employeeIdArr.push(result[i].id);
-        }
-    });
-
-    db.query(`SELECT * FROM role`, (err, result) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        for (let i = 0; i < result.length; i++) {
-            roleArr.push(result[i].title);
-            roleIdArr.push(result[i].id);
-        }
-    });
-
+    let [employees] = await db.promise().query(`SELECT * FROM employee;`);
+    let employeeArr = employees.map(employee => (`${employee.first_name} ${employee.last_name}`))
+    let employeeIdArr = employees.map(employee => employee.id);
+    
     inquirer
         .prompt([
-            {
-                type: 'input',
-                message: "test",
-                name: "test",
-            },
             {
                 type: 'list',
                 message: "Which employee's role do you want to update?",
@@ -317,7 +300,7 @@ function updtEmpl() {
                 }
             }
             const sql = `UPDATE employee SET role_id = (?) WHERE id = (?);`;
-            const params = [employeeId, roleId];
+            const params = [roleId, employeeId];
             
             db.query(sql, params, (err, result) => {
                 if (err) {
@@ -331,8 +314,3 @@ function updtEmpl() {
 }
 
 init();
-
-/*
-TODO:
-finish setting up inquirer
-*/
